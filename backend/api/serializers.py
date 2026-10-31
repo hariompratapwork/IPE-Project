@@ -23,6 +23,8 @@ class StudentProfileSerializer(serializers.ModelSerializer):
     rentalsCompleted = serializers.IntegerField(source='rentals_completed', required=False)
     verifiedStudent = serializers.BooleanField(source='verified_student', required=False)
     joinYear = serializers.CharField(source='join_year', required=False)
+    upiId = serializers.CharField(source='upi_id', required=False, allow_blank=True, allow_null=True)
+    upiQrUrl = serializers.CharField(source='upi_qr_url', required=False, allow_blank=True, allow_null=True)
 
     class Meta:
         model = StudentProfile
@@ -32,7 +34,9 @@ class StudentProfileSerializer(serializers.ModelSerializer):
             'rating', 'rentalsCompleted', 'rentals_completed',
             'verifiedStudent', 'verified_student',
             'joinYear', 'join_year',
-            'student_id_card_url'
+            'student_id_card_url',
+            'upiId', 'upi_id',
+            'upiQrUrl', 'upi_qr_url'
         ]
 
 
@@ -55,6 +59,8 @@ class RentalItemSerializer(serializers.ModelSerializer):
     isPopular = serializers.BooleanField(source='is_popular', required=False)
     availableNow = serializers.BooleanField(source='available_now', required=False)
     includedItems = serializers.ListField(source='included_items', required=False)
+    ownerUpiId = serializers.CharField(source='owner_upi_id', required=False, allow_blank=True, allow_null=True)
+    ownerUpiQrUrl = serializers.CharField(source='owner_upi_qr_url', required=False, allow_blank=True, allow_null=True)
 
     class Meta:
         model = RentalItem
@@ -67,6 +73,8 @@ class RentalItemSerializer(serializers.ModelSerializer):
             'imageUrl', 'image_url', 'images',
             'condition', 'isPopular', 'is_popular',
             'availableNow', 'available_now', 'featured',
+            'ownerUpiId', 'owner_upi_id',
+            'ownerUpiQrUrl', 'owner_upi_qr_url',
             'owner', 'description', 'highlights',
             'includedItems', 'included_items', 'reviews'
         ]
@@ -123,6 +131,54 @@ class RentalOrderSerializer(serializers.ModelSerializer):
     rentalStartTime = serializers.IntegerField(source='rental_start_time', required=False)
     rentalEndTime = serializers.IntegerField(source='rental_end_time', required=False)
 
+    # Owner Direct UPI
+    ownerUpiId = serializers.CharField(source='owner_upi_id', required=False, allow_blank=True)
+    ownerUpiQrUrl = serializers.CharField(source='owner_upi_qr_url', required=False, allow_blank=True)
+
+    # Confirmations & Payment Proof
+    paymentProofUrl = serializers.CharField(source='payment_proof_url', required=False, allow_blank=True, allow_null=True)
+    upiReferenceNo = serializers.CharField(source='upi_reference_no', required=False, allow_blank=True, allow_null=True)
+    renterPaidConfirmed = serializers.BooleanField(source='renter_paid_confirmed', required=False)
+    renterPaidAt = serializers.DateTimeField(source='renter_paid_at', required=False, allow_null=True)
+    ownerPaymentConfirmed = serializers.BooleanField(source='owner_payment_confirmed', required=False)
+    ownerPaymentConfirmedAt = serializers.DateTimeField(source='owner_payment_confirmed_at', required=False, allow_null=True)
+    ownerPaymentRejected = serializers.BooleanField(source='owner_payment_rejected', required=False)
+    ownerPaymentRejectedAt = serializers.DateTimeField(source='owner_payment_rejected_at', required=False, allow_null=True)
+    paymentDisputeReason = serializers.CharField(source='payment_dispute_reason', required=False, allow_blank=True, allow_null=True)
+
+    # Commission Tracking (on rental fee only)
+    commissionRate = serializers.FloatField(source='commission_rate', required=False)
+    commissionAmount = serializers.FloatField(source='commission_amount', required=False)
+    commissionStatus = serializers.CharField(source='commission_status', required=False)
+    commissionSettledAt = serializers.DateTimeField(source='commission_settled_at', required=False, allow_null=True)
+
+    # Security Deposit Lifecycle & Handover Checklists
+    depositStatus = serializers.CharField(source='deposit_status', required=False)
+    renterHandoverConfirmed = serializers.BooleanField(source='renter_handover_confirmed', required=False)
+    renterHandoverAt = serializers.DateTimeField(source='renter_handover_at', required=False, allow_null=True)
+    ownerHandoverConfirmed = serializers.BooleanField(source='owner_handover_confirmed', required=False)
+    ownerHandoverAt = serializers.DateTimeField(source='owner_handover_at', required=False, allow_null=True)
+    ownerDepositReturned = serializers.BooleanField(source='owner_deposit_returned', required=False)
+    ownerDepositReturnedAt = serializers.DateTimeField(source='owner_deposit_returned_at', required=False, allow_null=True)
+    renterDepositReceived = serializers.BooleanField(source='renter_deposit_received', required=False)
+    renterDepositReceivedAt = serializers.DateTimeField(source='renter_deposit_received_at', required=False, allow_null=True)
+
+    # Gadget Condition Checklists & Inspection Photos
+    pickupChecklist = serializers.JSONField(source='pickup_checklist', required=False)
+    returnChecklist = serializers.JSONField(source='return_checklist', required=False)
+    pickupPhotos = serializers.JSONField(source='pickup_photos', required=False)
+    returnPhotos = serializers.JSONField(source='return_photos', required=False)
+    renterReturnConfirmed = serializers.BooleanField(source='renter_return_confirmed', required=False)
+    renterReturnAt = serializers.DateTimeField(source='renter_return_at', required=False, allow_null=True)
+    ownerReturnConfirmed = serializers.BooleanField(source='owner_return_confirmed', required=False)
+    ownerReturnAt = serializers.DateTimeField(source='owner_return_at', required=False, allow_null=True)
+    actualReturnTime = serializers.DateTimeField(source='actual_return_time', required=False, allow_null=True)
+
+    # Disagreements
+    disputeReason = serializers.CharField(source='dispute_reason', required=False, allow_blank=True, allow_null=True)
+    disputedBy = serializers.CharField(source='disputed_by', required=False, allow_blank=True, allow_null=True)
+    disputedAt = serializers.DateTimeField(source='disputed_at', required=False, allow_null=True)
+
     class Meta:
         model = RentalOrder
         fields = [
@@ -140,12 +196,48 @@ class RentalOrderSerializer(serializers.ModelSerializer):
             'pickupTime', 'pickup_time',
             'pickupLocation', 'pickup_location',
             'status',
+            'ownerUpiId', 'owner_upi_id',
+            'ownerUpiQrUrl', 'owner_upi_qr_url',
             'paymentMethod', 'payment_method',
             'transactionId', 'transaction_id',
             'rentalFee', 'rental_fee',
             'platformFee', 'platform_fee',
             'securityDeposit', 'security_deposit',
             'totalPaid', 'total_paid',
+            'paymentProofUrl', 'payment_proof_url',
+            'upiReferenceNo', 'upi_reference_no',
+            'renterPaidConfirmed', 'renter_paid_confirmed',
+            'renterPaidAt', 'renter_paid_at',
+            'ownerPaymentConfirmed', 'owner_payment_confirmed',
+            'ownerPaymentConfirmedAt', 'owner_payment_confirmed_at',
+            'ownerPaymentRejected', 'owner_payment_rejected',
+            'ownerPaymentRejectedAt', 'owner_payment_rejected_at',
+            'paymentDisputeReason', 'payment_dispute_reason',
+            'commissionRate', 'commission_rate',
+            'commissionAmount', 'commission_amount',
+            'commissionStatus', 'commission_status',
+            'commissionSettledAt', 'commission_settled_at',
+            'depositStatus', 'deposit_status',
+            'renterHandoverConfirmed', 'renter_handover_confirmed',
+            'renterHandoverAt', 'renter_handover_at',
+            'ownerHandoverConfirmed', 'owner_handover_confirmed',
+            'ownerHandoverAt', 'owner_handover_at',
+            'ownerDepositReturned', 'owner_deposit_returned',
+            'ownerDepositReturnedAt', 'owner_deposit_returned_at',
+            'renterDepositReceived', 'renter_deposit_received',
+            'renterDepositReceivedAt', 'renter_deposit_received_at',
+            'pickupChecklist', 'pickup_checklist',
+            'returnChecklist', 'return_checklist',
+            'pickupPhotos', 'pickup_photos',
+            'returnPhotos', 'return_photos',
+            'renterReturnConfirmed', 'renter_return_confirmed',
+            'renterReturnAt', 'renter_return_at',
+            'ownerReturnConfirmed', 'owner_return_confirmed',
+            'ownerReturnAt', 'owner_return_at',
+            'actualReturnTime', 'actual_return_time',
+            'disputeReason', 'dispute_reason',
+            'disputedBy', 'disputed_by',
+            'disputedAt', 'disputed_at',
             'videoRecorded', 'video_recorded',
             'videoTimestamp', 'video_timestamp',
             'studentIdCardUrl', 'student_id_card_url',
@@ -165,7 +257,21 @@ class RentalOrderSerializer(serializers.ModelSerializer):
             'rentalFee': float(instance.rental_fee),
             'platformFee': float(instance.platform_fee),
             'securityDeposit': float(instance.security_deposit),
-            'totalPaid': float(instance.total_paid)
+            'totalPaid': float(instance.total_paid),
+            'ownerUpiId': instance.owner_upi_id,
+            'ownerUpiQrUrl': instance.owner_upi_qr_url,
+            'paymentProofUrl': instance.payment_proof_url,
+            'upiReferenceNo': instance.upi_reference_no,
+            'renterPaidConfirmed': instance.renter_paid_confirmed,
+            'renterPaidAt': instance.renter_paid_at.isoformat() if instance.renter_paid_at else None,
+            'ownerPaymentConfirmed': instance.owner_payment_confirmed,
+            'ownerPaymentConfirmedAt': instance.owner_payment_confirmed_at.isoformat() if instance.owner_payment_confirmed_at else None,
+            'ownerPaymentRejected': instance.owner_payment_rejected,
+            'paymentDisputeReason': instance.payment_dispute_reason,
+            'commissionRate': float(instance.commission_rate),
+            'commissionAmount': float(instance.commission_amount),
+            'commissionStatus': instance.commission_status,
+            'depositStatus': instance.deposit_status,
         }
         return ret
 

@@ -1,25 +1,25 @@
 import React from 'react';
-import { Search, MapPin, LayoutGrid, ArrowRight, Laptop, BookOpen, Gamepad2, ChevronDown } from 'lucide-react';
+import { Search, LayoutGrid, ArrowRight, Laptop, BookOpen, Gamepad2, ChevronDown, Plus } from 'lucide-react';
 import { Campus, ItemCategory } from '../types';
 
 interface SearchBarProps {
-  currentCampus: Campus;
-  onOpenCampusModal: () => void;
+  currentCampus?: Campus;
+  onOpenCampusModal?: () => void;
   selectedCategory: string;
   onCategoryChange: (cat: ItemCategory | 'All') => void;
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
   onExecuteSearch: () => void;
+  onOpenListItemModal?: () => void;
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
-  currentCampus,
-  onOpenCampusModal,
   selectedCategory,
   onCategoryChange,
   searchQuery,
   onSearchQueryChange,
   onExecuteSearch,
+  onOpenListItemModal,
 }) => {
   const handleShortcutClick = (cat: ItemCategory) => {
     onCategoryChange(selectedCategory === cat ? 'All' : cat);
@@ -36,22 +36,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
         }}
         className="w-full p-1.5 sm:p-2 rounded-2xl bg-[#0B1014] border border-[#24313C] flex flex-col md:flex-row items-stretch md:items-center gap-2 shadow-2xl transition-all focus-within:border-[#C8FF00]/50"
       >
-        {/* CAMPUS SELECTOR */}
-        <button
-          type="button"
-          onClick={onOpenCampusModal}
-          className="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-[#111820] transition-colors text-left shrink-0 cursor-pointer group"
-        >
-          <MapPin className="w-4 h-4 text-[#C8FF00] shrink-0" />
-          <span className="text-xs font-semibold text-[#F5F7FA] group-hover:text-[#C8FF00] transition-colors truncate max-w-[130px] sm:max-w-[150px]">
-            {currentCampus.name}
-          </span>
-          <ChevronDown className="w-3.5 h-3.5 text-[#94A3B8] shrink-0" />
-        </button>
-
-        {/* DIVIDER */}
-        <div className="hidden md:block w-[1px] h-6 bg-[#24313C] shrink-0"></div>
-
         {/* SEARCH KEYWORD INPUT */}
         <div className="flex-1 flex items-center gap-2.5 px-3 py-1.5 min-w-0">
           <Search className="w-4 h-4 text-[#94A3B8] shrink-0" />
@@ -137,6 +121,20 @@ export const SearchBar: React.FC<SearchBarProps> = ({
           <span>Gaming</span>
         </button>
       </div>
+
+      {/* 3. LEND AN ITEM BUTTON — below category chips */}
+      {onOpenListItemModal && (
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={onOpenListItemModal}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm bg-[#C8FF00] text-black hover:bg-[#d6ff33] active:scale-95 transition-all cursor-pointer shadow-sm"
+          >
+            <Plus className="w-4 h-4 stroke-[3]" />
+            <span>Lend an item</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 };

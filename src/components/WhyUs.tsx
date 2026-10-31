@@ -32,10 +32,10 @@ export const WhyUs: React.FC = () => {
         {/* HEADER */}
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-400 mb-3">
-            <span>THE HIRO ADVANTAGE</span>
+            <span>THE RENTOZI ADVANTAGE</span>
           </div>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
-            Why students choose HIRO
+            Why students choose RENTOZI
           </h2>
           <p className="mt-2 text-sm sm:text-base text-slate-400">
             Built exclusively for college life — fast, affordable, and safe.

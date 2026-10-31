@@ -36,9 +36,9 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
     setIsSubmitting(true);
 
     // Build mailto body
-    const subject = encodeURIComponent(`[HIRO Service Request] ${service.title}`);
+    const subject = encodeURIComponent(`[RENTOZI Service Request] ${service.title}`);
     const body = encodeURIComponent(
-      `Hi Hariom,\n\nA new service request has been submitted on HIRO Campus Rentals.\n\n` +
+      `Hi Hariom,\n\nA new service request has been submitted on RENTOZI Campus Rentals.\n\n` +
       `──────────────────────────\n` +
       `Service Type : ${service.title}\n` +
       `Student Name : ${studentName.trim() || 'Not provided'}\n` +
@@ -47,7 +47,7 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
       `──────────────────────────\n\n` +
       `Requirements:\n${details.trim()}\n\n` +
       `──────────────────────────\n` +
-      `Sent via HIRO Campus Rentals – hariompratapwork@gmail.com`
+      `Sent via RENTOZI Campus Rentals – hariompratapwork@gmail.com`
     );
 
     // Open mail client with pre-filled data
@@ -102,7 +102,7 @@ export const ServiceRequestModal: React.FC<ServiceRequestModalProps> = ({
           </div>
           <h2 className="text-2xl font-extrabold text-white">Request {service.title}</h2>
           <p className="text-xs text-slate-400 mt-1">
-            Submit your requirements directly to the HIRO Admin Team. Starting at <strong className="text-brand-lime">{service.startingPrice}</strong>.
+            Submit your requirements directly to the RENTOZI Admin Team. Starting at <strong className="text-brand-lime">{service.startingPrice}</strong>.
           </p>
         </div>
 

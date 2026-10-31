@@ -38,9 +38,20 @@ class ReviewAdmin(admin.ModelAdmin):
 
 @admin.register(RentalOrder)
 class RentalOrderAdmin(admin.ModelAdmin):
-    list_display = ('order_id', 'pickup_code', 'item', 'renter_name', 'status', 'total_paid', 'created_at')
-    list_filter = ('status', 'duration_mode')
-    search_fields = ('order_id', 'pickup_code', 'renter_name', 'renter_email')
+    list_display = (
+        'order_id', 'pickup_code', 'item', 'renter_name', 
+        'status', 'rental_fee', 'security_deposit', 'total_paid',
+        'renter_paid_confirmed', 'owner_payment_confirmed',
+        'commission_amount', 'commission_status', 'deposit_status', 'created_at'
+    )
+    list_filter = ('status', 'commission_status', 'deposit_status', 'duration_mode')
+    search_fields = ('order_id', 'pickup_code', 'renter_name', 'renter_email', 'owner_upi_id')
+    actions = ['mark_commission_settled']
+
+    @admin.action(description="Mark selected commission records as SETTLED")
+    def mark_commission_settled(self, request, queryset):
+        from django.utils import timezone
+        queryset.update(commission_status='SETTLED', commission_settled_at=timezone.now())
 
 
 @admin.register(AdminService)

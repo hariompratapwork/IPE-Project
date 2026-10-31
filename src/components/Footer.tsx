@@ -19,10 +19,10 @@ export const Footer: React.FC<FooterProps> = ({
         {/* LOGO */}
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-[#C8FF00] text-black flex items-center justify-center font-black text-base">
-            H
+            R
           </div>
           <div className="flex items-baseline gap-2">
-            <span className="font-extrabold text-xl text-[#F5F7FA]">HIRO</span>
+            <span className="font-extrabold text-xl text-[#F5F7FA]">RENTOZI</span>
             <span className="text-[10px] uppercase font-bold tracking-wider text-[#94A3B8]">Campus Borrow Club</span>
           </div>
         </div>
@@ -45,7 +45,7 @@ export const Footer: React.FC<FooterProps> = ({
 
         {/* COPYRIGHT */}
         <p className="text-xs text-slate-500">
-          © 2026 HIRO. Campus Rentals.
+          © 2026 RENTOZI. Campus Rentals.
         </p>
 
       </div>

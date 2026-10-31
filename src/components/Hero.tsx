@@ -12,6 +12,7 @@ interface HeroProps {
   onSearchQueryChange: (query: string) => void;
   onExecuteSearch: () => void;
   onSelectProduct?: (productId: string) => void;
+  onOpenListItemModal?: () => void;
 }
 
 export const Hero: React.FC<HeroProps> = ({
@@ -23,6 +24,7 @@ export const Hero: React.FC<HeroProps> = ({
   onSearchQueryChange,
   onExecuteSearch,
   onSelectProduct,
+  onOpenListItemModal,
 }) => {
   return (
     <section id="hero" className="relative pt-8 pb-8 lg:pt-12 lg:pb-10 overflow-hidden bg-[#050708]">
@@ -63,6 +65,7 @@ export const Hero: React.FC<HeroProps> = ({
                 searchQuery={searchQuery}
                 onSearchQueryChange={onSearchQueryChange}
                 onExecuteSearch={onExecuteSearch}
+                onOpenListItemModal={onOpenListItemModal}
               />
             </div>
 

@@ -15,7 +15,7 @@ export const CtaBanner: React.FC<CtaBannerProps> = ({ onListItemClick }) => {
               Got something you're not using?
             </h2>
             <p className="text-sm text-slate-400">
-              List it on HIRO and let someone nearby put it to use.
+              List it on RENTOZI and let someone nearby put it to use.
             </p>
           </div>
 

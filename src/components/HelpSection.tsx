@@ -79,7 +79,7 @@ export const HelpSection: React.FC = () => {
 
           {/* Mailto CTA button */}
           <a
-            href={`mailto:${email}?subject=HIRO%20Help%20Request&body=Hi%2C%20I%20need%20help%20with...`}
+            href={`mailto:${email}?subject=RENTOZI%20Help%20Request&body=Hi%2C%20I%20need%20help%20with...`}
             className="mt-8 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-lime text-black font-bold text-sm hover:bg-brand-limeHover transition-all active:scale-95"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2.2} viewBox="0 0 24 24">

@@ -19,6 +19,8 @@ export interface Owner {
   rentalsCompleted: number;
   verifiedStudent: boolean;
   joinYear: string;
+  upiId?: string;
+  upiQrUrl?: string;
 }
 
 export interface Review {
@@ -45,6 +47,8 @@ export interface RentalItem {
   condition: ItemCondition;
   isPopular?: boolean;
   availableNow: boolean;
+  ownerUpiId?: string;
+  ownerUpiQrUrl?: string;
   owner: Owner;
   description: string;
   highlights: string[];
@@ -73,12 +77,31 @@ export interface FilterState {
 }
 
 export type OrderStatus = 
+  | 'AWAITING_PAYMENT'
+  | 'PAYMENT_PROOF_SUBMITTED'
+  | 'PAYMENT_CONFIRMED_BY_OWNER'
+  | 'PAYMENT_DISPUTED'
+  | 'READY_FOR_PICKUP'
+  | 'RENTAL_IN_PROGRESS'
+  | 'RENTAL_OVERDUE'
+  | 'RETURN_PENDING_CONFIRMATION'
+  | 'DEPOSIT_REFUND_PENDING_CONFIRMATION'
+  | 'DEPOSIT_REFUND_COMPLETED'
   | 'REQUESTED'
   | 'ACCEPTED'
+  | 'PAYMENT_PENDING_OWNER'
   | 'PAID'
-  | 'READY_FOR_PICKUP'
   | 'ACTIVE_RENTAL'
-  | 'RETURNED';
+  | 'RETURNED'
+  | 'COMPLETED'
+  | 'DISPUTED';
+
+export type DepositStatus =
+  | 'DEPOSIT_NOT_CONFIRMED'
+  | 'DEPOSIT_HELD_BY_OWNER'
+  | 'REFUND_PENDING_CONFIRMATION'
+  | 'REFUND_COMPLETED'
+  | 'DISPUTED';
 
 export interface PaymentDetails {
   method: 'UPI_QR' | 'CARD' | 'NET_BANKING';
@@ -88,6 +111,16 @@ export interface PaymentDetails {
   platformFee: number;
   securityDeposit: number;
   totalPaid: number;
+  ownerUpiId?: string;
+  ownerUpiQrUrl?: string;
+  renterPaidConfirmed?: boolean;
+  renterPaidAt?: string | null;
+  ownerPaymentConfirmed?: boolean;
+  ownerPaymentConfirmedAt?: string | null;
+  commissionRate?: number;
+  commissionAmount?: number;
+  commissionStatus?: 'UNPAID' | 'SETTLED';
+  depositStatus?: DepositStatus;
 }
 
 export interface RentalOrder {
@@ -106,6 +139,42 @@ export interface RentalOrder {
   pickupLocation: string;
   status: OrderStatus;
   payment: PaymentDetails;
+  ownerUpiId?: string;
+  ownerUpiQrUrl?: string;
+  paymentProofUrl?: string | null;
+  upiReferenceNo?: string | null;
+  renterPaidConfirmed?: boolean;
+  renterPaidAt?: string | null;
+  ownerPaymentConfirmed?: boolean;
+  ownerPaymentConfirmedAt?: string | null;
+  ownerPaymentRejected?: boolean;
+  ownerPaymentRejectedAt?: string | null;
+  paymentDisputeReason?: string | null;
+  commissionRate?: number;
+  commissionAmount?: number;
+  commissionStatus?: 'UNPAID' | 'SETTLED';
+  commissionSettledAt?: string | null;
+  depositStatus?: DepositStatus;
+  renterHandoverConfirmed?: boolean;
+  renterHandoverAt?: string | null;
+  ownerHandoverConfirmed?: boolean;
+  ownerHandoverAt?: string | null;
+  pickupChecklist?: Record<string, boolean>;
+  returnChecklist?: Record<string, boolean>;
+  pickupPhotos?: string[];
+  returnPhotos?: string[];
+  renterReturnConfirmed?: boolean;
+  renterReturnAt?: string | null;
+  ownerReturnConfirmed?: boolean;
+  ownerReturnAt?: string | null;
+  actualReturnTime?: string | null;
+  ownerDepositReturned?: boolean;
+  ownerDepositReturnedAt?: string | null;
+  renterDepositReceived?: boolean;
+  renterDepositReceivedAt?: string | null;
+  disputeReason?: string | null;
+  disputedBy?: string | null;
+  disputedAt?: string | null;
   videoRecorded?: boolean;
   videoTimestamp?: string;
   studentIdCardUrl?: string; // University ID Card picture

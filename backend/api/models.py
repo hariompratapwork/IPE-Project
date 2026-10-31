@@ -29,6 +29,10 @@ class StudentProfile(models.Model):
     join_year = models.CharField(max_length=10, default='2024')
     student_id_card_url = models.TextField(blank=True, null=True)
     
+    # Owner UPI Payment Settings
+    upi_id = models.CharField(max_length=100, blank=True, null=True, default='')
+    upi_qr_url = models.TextField(blank=True, null=True, default='')
+
     # OTP Authentication
     otp_code = models.CharField(max_length=6, blank=True, null=True)
     otp_created_at = models.DateTimeField(blank=True, null=True)
@@ -73,6 +77,10 @@ class RentalItem(models.Model):
     available_now = models.BooleanField(default=True)
     featured = models.BooleanField(default=False)
     
+    # Direct Owner UPI Payment details
+    owner_upi_id = models.CharField(max_length=100, blank=True, null=True, default='')
+    owner_upi_qr_url = models.TextField(blank=True, null=True, default='')
+
     owner = models.ForeignKey(StudentProfile, on_delete=models.CASCADE, related_name='items')
     description = models.TextField(blank=True)
     highlights = models.JSONField(default=list, blank=True)
@@ -99,12 +107,24 @@ class Review(models.Model):
 
 class RentalOrder(models.Model):
     ORDER_STATUS_CHOICES = [
+        ('AWAITING_PAYMENT', 'Awaiting Payment'),
+        ('PAYMENT_PROOF_SUBMITTED', 'Payment Proof Submitted'),
+        ('PAYMENT_CONFIRMED_BY_OWNER', 'Payment Confirmed by Owner'),
+        ('PAYMENT_DISPUTED', 'Payment Disputed'),
+        ('READY_FOR_PICKUP', 'Ready for Pickup'),
+        ('RENTAL_IN_PROGRESS', 'Rental In Progress'),
+        ('RENTAL_OVERDUE', 'Rental Overdue'),
+        ('RETURN_PENDING_CONFIRMATION', 'Return Pending Confirmation'),
+        ('DEPOSIT_REFUND_PENDING_CONFIRMATION', 'Deposit Refund Pending Confirmation'),
+        ('DEPOSIT_REFUND_COMPLETED', 'Deposit Refund Completed'),
+        # Legacy status compatibility:
         ('REQUESTED', 'REQUESTED'),
         ('ACCEPTED', 'ACCEPTED'),
         ('PAID', 'PAID'),
-        ('READY_FOR_PICKUP', 'READY_FOR_PICKUP'),
         ('ACTIVE_RENTAL', 'ACTIVE_RENTAL'),
         ('RETURNED', 'RETURNED'),
+        ('COMPLETED', 'COMPLETED'),
+        ('DISPUTED', 'DISPUTED'),
     ]
 
     order_id = models.CharField(max_length=100, unique=True, primary_key=True)  # e.g. CLP20240922-4587
@@ -121,16 +141,75 @@ class RentalOrder(models.Model):
     end_date = models.CharField(max_length=50)
     pickup_time = models.CharField(max_length=50, blank=True)
     pickup_location = models.CharField(max_length=200, blank=True)
-    status = models.CharField(max_length=30, choices=ORDER_STATUS_CHOICES, default='PAID')
+    status = models.CharField(max_length=50, choices=ORDER_STATUS_CHOICES, default='AWAITING_PAYMENT')
 
-    # Payment details
+    # Direct Owner UPI Details
+    owner_upi_id = models.CharField(max_length=100, blank=True, default='')
+    owner_upi_qr_url = models.TextField(blank=True, default='')
+
+    # Payment details (direct to owner)
     payment_method = models.CharField(max_length=50, default='UPI_QR')
     transaction_id = models.CharField(max_length=100)
     rental_fee = models.DecimalField(max_digits=10, decimal_places=2)
-    platform_fee = models.DecimalField(max_digits=10, decimal_places=2, default=29.0)
+    platform_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
     security_deposit = models.DecimalField(max_digits=10, decimal_places=2)
     total_paid = models.DecimalField(max_digits=10, decimal_places=2)
     payment_timestamp = models.CharField(max_length=100, blank=True)
+
+    # UPI Payment Proof & Dual Confirmations
+    payment_proof_url = models.TextField(blank=True, null=True)
+    upi_reference_no = models.CharField(max_length=100, blank=True, null=True)
+    renter_paid_confirmed = models.BooleanField(default=False)
+    renter_paid_at = models.DateTimeField(null=True, blank=True)
+    owner_payment_confirmed = models.BooleanField(default=False)
+    owner_payment_confirmed_at = models.DateTimeField(null=True, blank=True)
+    owner_payment_rejected = models.BooleanField(default=False)
+    owner_payment_rejected_at = models.DateTimeField(null=True, blank=True)
+    payment_dispute_reason = models.TextField(blank=True, null=True)
+
+    # Commission Management (Calculated strictly on rental_fee only, excluding refundable deposit)
+    commission_rate = models.DecimalField(max_digits=5, decimal_places=2, default=5.0)  # e.g. 5%
+    commission_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)
+    commission_status = models.CharField(
+        max_length=30, 
+        choices=[('UNPAID', 'UNPAID'), ('SETTLED', 'SETTLED')], 
+        default='UNPAID'
+    )
+    commission_settled_at = models.DateTimeField(null=True, blank=True)
+
+    # Refundable Security Deposit Lifecycle
+    DEPOSIT_STATUS_CHOICES = [
+        ('DEPOSIT_NOT_CONFIRMED', 'Deposit Not Confirmed'),
+        ('DEPOSIT_HELD_BY_OWNER', 'Deposit Held by Owner'),
+        ('REFUND_PENDING_CONFIRMATION', 'Deposit Refund Pending Confirmation'),
+        ('REFUND_COMPLETED', 'Deposit Refund Completed'),
+        ('DISPUTED', 'Disputed / Problem Reported'),
+    ]
+    deposit_status = models.CharField(max_length=50, choices=DEPOSIT_STATUS_CHOICES, default='DEPOSIT_NOT_CONFIRMED')
+    renter_handover_confirmed = models.BooleanField(default=False)
+    renter_handover_at = models.DateTimeField(null=True, blank=True)
+    owner_handover_confirmed = models.BooleanField(default=False)
+    owner_handover_at = models.DateTimeField(null=True, blank=True)
+    owner_deposit_returned = models.BooleanField(default=False)
+    owner_deposit_returned_at = models.DateTimeField(null=True, blank=True)
+    renter_deposit_received = models.BooleanField(default=False)
+    renter_deposit_received_at = models.DateTimeField(null=True, blank=True)
+
+    # Gadget Condition Checklists and Inspection Photos
+    pickup_checklist = models.JSONField(default=dict, blank=True)
+    return_checklist = models.JSONField(default=dict, blank=True)
+    pickup_photos = models.JSONField(default=list, blank=True)
+    return_photos = models.JSONField(default=list, blank=True)
+    renter_return_confirmed = models.BooleanField(default=False)
+    renter_return_at = models.DateTimeField(null=True, blank=True)
+    owner_return_confirmed = models.BooleanField(default=False)
+    owner_return_at = models.DateTimeField(null=True, blank=True)
+    actual_return_time = models.DateTimeField(null=True, blank=True)
+
+    # Problem / Disagreement reporting
+    dispute_reason = models.TextField(blank=True, null=True)
+    disputed_by = models.CharField(max_length=100, blank=True, null=True)
+    disputed_at = models.DateTimeField(null=True, blank=True)
 
     # Verification and Live Timer
     video_recorded = models.BooleanField(default=False)

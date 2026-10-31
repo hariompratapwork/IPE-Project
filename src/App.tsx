@@ -19,6 +19,10 @@ import { CampusModal } from './components/CampusModal';
 import { Toast } from './components/Toast';
 import { Footer } from './components/Footer';
 import { HelpSection } from './components/HelpSection';
+import { SignInModal } from './components/SignInModal';
+import { RegisterModal } from './components/RegisterModal';
+import { RentoAIModal } from './components/RentoAIModal';
+import { Sparkles } from 'lucide-react';
 
 
 import { MOCK_ITEMS, CAMPUSES } from './data/mockData';
@@ -58,7 +62,7 @@ export function App() {
   // Wishlist / Saved items in LocalStorage
   const [savedItemIds, setSavedItemIds] = useState<string[]>(() => {
     try {
-      const stored = localStorage.getItem('hiro_saved_items');
+      const stored = localStorage.getItem('rentozi_saved_items');
       return stored ? JSON.parse(stored) : ['item-1', 'item-3'];
     } catch (e) {
       return ['item-1', 'item-3'];
@@ -67,7 +71,7 @@ export function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('hiro_saved_items', JSON.stringify(savedItemIds));
+      localStorage.setItem('rentozi_saved_items', JSON.stringify(savedItemIds));
     } catch (e) {
       console.error(e);
     }
@@ -80,6 +84,9 @@ export function App() {
   const [isListItemModalOpen, setIsListItemModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isCampusModalOpen, setIsCampusModalOpen] = useState(false);
+  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Payment Gateway & Verification QR State
@@ -142,13 +149,19 @@ export function App() {
     setIsPaymentModalOpen(false);
     setActiveOrder(newOrder);
     setIsVerificationModalOpen(true);
-    showToast(`Payment successful! Pickup code: ${newOrder.pickupCode}`);
+    showToast(`Payment confirmed received by owner! Pickup code: ${newOrder.pickupCode}`);
   };
 
   const handleOrderUpdated = (updatedOrder: RentalOrder) => {
     setActiveOrder(updatedOrder);
     if (updatedOrder.status === 'ACTIVE_RENTAL') {
-      showToast(`Pickup QR verified! Live rental timer started for ${updatedOrder.item.title}.`);
+      showToast(`Handover verified! Live rental timer started for ${updatedOrder.item.title}.`);
+    } else if (updatedOrder.depositStatus === 'REFUND_COMPLETED') {
+      showToast(`Deposit refund confirmed by both parties! Rental completed.`);
+    } else if (updatedOrder.depositStatus === 'REFUND_PENDING_CONFIRMATION') {
+      showToast(`Owner marked deposit returned. Renter confirmation pending.`);
+    } else if (updatedOrder.status === 'DISPUTED') {
+      showToast(`Problem reported. Community resolution team notified.`);
     }
   };
 
@@ -187,6 +200,8 @@ export function App() {
       <Header
         onOpenListItemModal={() => setIsListItemModalOpen(true)}
         onOpenAuthModal={() => setIsAuthModalOpen(true)}
+        onOpenSignInModal={() => setIsSignInModalOpen(true)}
+        onOpenRegisterModal={() => setIsRegisterModalOpen(true)}
         onNavigate={scrollToSection}
         currentCampus={currentCampus}
         onOpenCampusModal={() => setIsCampusModalOpen(true)}
@@ -217,6 +232,7 @@ export function App() {
             const found = items.find(i => i.id === productId);
             if (found) setSelectedItemForDetail(found);
           }}
+          onOpenListItemModal={() => setIsListItemModalOpen(true)}
         />
 
         {/* SLIM HORIZONTAL TRUST STATISTICS STRIP */}
@@ -303,6 +319,7 @@ export function App() {
 
       {/* PICKUP CONFIRMATION & QR VERIFICATION / SCANNER MODAL */}
       <PickupVerificationModal
+        isOpen={isVerificationModalOpen}
         order={activeOrder}
         onClose={() => setIsVerificationModalOpen(false)}
         onOrderUpdated={handleOrderUpdated}
@@ -323,6 +340,22 @@ export function App() {
         onAuthSuccess={handleAuthSuccess}
       />
 
+      {/* SIGN IN MODAL */}
+      <SignInModal
+        isOpen={isSignInModalOpen}
+        onClose={() => setIsSignInModalOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
+        onSwitchToRegister={() => setIsRegisterModalOpen(true)}
+      />
+
+      {/* REGISTER MODAL */}
+      <RegisterModal
+        isOpen={isRegisterModalOpen}
+        onClose={() => setIsRegisterModalOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
+        onSwitchToSignIn={() => setIsSignInModalOpen(true)}
+      />
+
       <CampusModal
         isOpen={isCampusModalOpen}
         onClose={() => setIsCampusModalOpen(false)}
@@ -336,6 +369,34 @@ export function App() {
 
       {/* TOAST NOTIFICATIONS */}
       <Toast message={toastMessage} onClose={() => setToastMessage(null)} />
+
+      {/* RENTOAI CAMPUS ASSISTANT MODAL */}
+      <RentoAIModal
+        isOpen={isAiModalOpen}
+        onClose={() => setIsAiModalOpen(false)}
+        items={items}
+        onSelectItem={(item) => setSelectedItemForDetail(item)}
+        currentCampus={currentCampus}
+        onOpenListItemModal={() => setIsListItemModalOpen(true)}
+      />
+
+      {/* FLOATING RENTOAI TRIGGER BUTTON */}
+      <aside 
+        aria-label="Campus AI Co-Pilot Assistant"
+        className="fixed bottom-6 right-6 z-40"
+      >
+        <button
+          onClick={() => setIsAiModalOpen(true)}
+          className="group flex items-center gap-2.5 px-4 py-3 rounded-full bg-[#C8FF00] hover:bg-[#b2e600] text-black font-extrabold text-xs sm:text-sm shadow-2xl shadow-[#C8FF00]/30 hover:scale-105 active:scale-95 transition-all cursor-pointer border-2 border-black"
+          title="Open RentoAI Assistant"
+        >
+          <div className="w-6 h-6 rounded-full bg-black text-[#C8FF00] flex items-center justify-center">
+            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+          </div>
+          <span className="tracking-tight">Ask RentoAI</span>
+          <span className="w-2 h-2 rounded-full bg-emerald-700 animate-ping hidden sm:inline-block" />
+        </button>
+      </aside>
 
     </div>
   );

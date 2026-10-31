@@ -41,7 +41,7 @@ export async function getCampuses(): Promise<Campus[]> {
   try {
     return await apiRequest<Campus[]>('/campuses/');
   } catch (e) {
-    console.warn('[HIRO API] Campuses fallback to mock data:', e);
+    console.warn('[RENTOZI API] Campuses fallback to mock data:', e);
     return CAMPUSES;
   }
 }
@@ -65,7 +65,7 @@ export async function getItems(filters?: {
     const queryStr = params.toString() ? `?${params.toString()}` : '';
     return await apiRequest<RentalItem[]>(`/items/${queryStr}`);
   } catch (e) {
-    console.warn('[HIRO API] Items fallback to mock data:', e);
+    console.warn('[RENTOZI API] Items fallback to mock data:', e);
     return MOCK_ITEMS;
   }
 }
@@ -88,13 +88,15 @@ export async function createItem(item: Partial<RentalItem>): Promise<RentalItem>
       description: item.description,
       highlights: item.highlights || [],
       included_items: item.includedItems || [],
+      owner_upi_id: item.ownerUpiId || '',
+      owner_upi_qr_url: item.ownerUpiQrUrl || '',
     };
     return await apiRequest<RentalItem>('/items/', {
       method: 'POST',
       body: JSON.stringify(payload),
     });
   } catch (e) {
-    console.warn('[HIRO API] Listing fallback to local:', e);
+    console.warn('[RENTOZI API] Listing fallback to local:', e);
     return item as RentalItem;
   }
 }
@@ -109,7 +111,7 @@ export async function sendOtp(email: string): Promise<{ success: boolean; messag
       body: JSON.stringify({ email }),
     });
   } catch (e: any) {
-    console.warn('[HIRO API] Send OTP fallback:', e);
+    console.warn('[RENTOZI API] Send OTP fallback:', e);
     if (email.endsWith('.ac.in')) {
       return { success: true, message: `OTP sent to ${email}`, test_otp: '1234' };
     }
@@ -135,7 +137,7 @@ export async function verifyOtp(email: string, otp: string): Promise<{ success: 
       },
     };
   } catch (e: any) {
-    console.warn('[HIRO API] Verify OTP fallback:', e);
+    console.warn('[RENTOZI API] Verify OTP fallback:', e);
     if (otp === '1234' || otp.length === 4) {
       return {
         success: true,
@@ -156,7 +158,7 @@ export async function createOrder(orderPayload: any): Promise<RentalOrder> {
       body: JSON.stringify(orderPayload),
     });
   } catch (e) {
-    console.warn('[HIRO API] Create Order fallback to simulated order:', e);
+    console.warn('[RENTOZI API] Create Order fallback to simulated order:', e);
     throw e;
   }
 }
@@ -171,7 +173,137 @@ export async function verifyPickup(orderId: string, studentIdCardUrl?: string): 
       body: JSON.stringify({ studentIdCardUrl }),
     });
   } catch (e) {
-    console.warn('[HIRO API] Verify Pickup fallback:', e);
+    console.warn('[RENTOZI API] Verify Pickup fallback:', e);
+    throw e;
+  }
+}
+
+/**
+ * Direct Owner UPI: Renter taps 'I have Paid' with screenshot/proof & UTR reference
+ */
+export async function renterPaid(
+  orderId: string,
+  proof?: { paymentProofUrl?: string; upiReferenceNo?: string }
+): Promise<{ success: boolean; order: RentalOrder }> {
+  try {
+    return await apiRequest<{ success: boolean; order: RentalOrder }>(`/orders/${orderId}/renter-paid/`, {
+      method: 'POST',
+      body: JSON.stringify(proof || {}),
+    });
+  } catch (e) {
+    console.warn('[RENTOZI API] renterPaid fallback:', e);
+    throw e;
+  }
+}
+
+/**
+ * Direct Owner UPI: Owner taps 'Payment Received'
+ */
+export async function ownerConfirmPayment(orderId: string): Promise<{ success: boolean; order: RentalOrder }> {
+  try {
+    return await apiRequest<{ success: boolean; order: RentalOrder }>(`/orders/${orderId}/owner-confirm-payment/`, {
+      method: 'POST',
+    });
+  } catch (e) {
+    console.warn('[RENTOZI API] ownerConfirmPayment fallback:', e);
+    throw e;
+  }
+}
+
+/**
+ * Direct Owner UPI: Owner taps 'Payment Not Received'
+ */
+export async function ownerRejectPayment(orderId: string, reason?: string): Promise<{ success: boolean; order: RentalOrder }> {
+  try {
+    return await apiRequest<{ success: boolean; order: RentalOrder }>(`/orders/${orderId}/owner-reject-payment/`, {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+    });
+  } catch (e) {
+    console.warn('[RENTOZI API] ownerRejectPayment fallback:', e);
+    throw e;
+  }
+}
+
+/**
+ * Handover & Security Deposit: Confirm Handover by either Renter or Owner with Checklist & Inspection Photos
+ */
+export async function confirmHandover(
+  orderId: string, 
+  role: 'RENTER' | 'OWNER',
+  checklist?: Record<string, boolean>,
+  photos?: string[]
+): Promise<{ success: boolean; order: RentalOrder }> {
+  try {
+    return await apiRequest<{ success: boolean; order: RentalOrder }>(`/orders/${orderId}/confirm-handover/`, {
+      method: 'POST',
+      body: JSON.stringify({ role, checklist, photos }),
+    });
+  } catch (e) {
+    console.warn('[RENTOZI API] confirmHandover fallback:', e);
+    throw e;
+  }
+}
+
+/**
+ * Gadget Return: Confirm Gadget Return by either Renter or Owner with Inspection Checklist & Photos
+ */
+export async function returnGadget(
+  orderId: string,
+  role: 'RENTER' | 'OWNER',
+  checklist?: Record<string, boolean>,
+  photos?: string[]
+): Promise<{ success: boolean; order: RentalOrder }> {
+  try {
+    return await apiRequest<{ success: boolean; order: RentalOrder }>(`/orders/${orderId}/return-gadget/`, {
+      method: 'POST',
+      body: JSON.stringify({ role, checklist, photos }),
+    });
+  } catch (e) {
+    console.warn('[RENTOZI API] returnGadget fallback:', e);
+    throw e;
+  }
+}
+
+/**
+ * Security Deposit Refund: Owner marks deposit as returned
+ */
+export async function returnDepositOwner(orderId: string): Promise<{ success: boolean; order: RentalOrder }> {
+  try {
+    return await apiRequest<{ success: boolean; order: RentalOrder }>(`/orders/${orderId}/return-deposit-owner/`, {
+      method: 'POST',
+    });
+  } catch (e) {
+    console.warn('[RENTOZI API] returnDepositOwner fallback:', e);
+    throw e;
+  }
+}
+
+/**
+ * Security Deposit Refund: Renter confirms 'I Received My Deposit'
+ */
+export async function confirmDepositRenter(orderId: string): Promise<{ success: boolean; order: RentalOrder }> {
+  try {
+    return await apiRequest<{ success: boolean; order: RentalOrder }>(`/orders/${orderId}/confirm-deposit-renter/`, {
+      method: 'POST',
+    });
+  } catch (e) {
+    console.warn('[RENTOZI API] confirmDepositRenter fallback:', e);
+    throw e;
+  }
+}
+
+/**
+ * Report a Problem / Disagreement
+ */
+export async function reportProblem(orderId: string, reason: string, disputedBy: string): Promise<{ success: boolean; order: RentalOrder }> {
+  try {
+    return await apiRequest<{ success: boolean; order: RentalOrder }>(`/orders/${orderId}/report-problem/`, {
+      method: 'POST',
+      body: JSON.stringify({ reason, disputedBy }),
+    });
+  } catch (e) {
+    console.warn('[RENTOZI API] reportProblem fallback:', e);
     throw e;
   }
 }
@@ -183,7 +315,7 @@ export async function getAdminServices(): Promise<AdminService[]> {
   try {
     return await apiRequest<AdminService[]>('/services/');
   } catch (e) {
-    console.warn('[HIRO API] Services fallback to mock data:', e);
+    console.warn('[RENTOZI API] Services fallback to mock data:', e);
     return ADMIN_SERVICES;
   }
 }
@@ -198,7 +330,7 @@ export async function submitServiceRequest(req: Partial<ServiceRequest>): Promis
       body: JSON.stringify(req),
     });
   } catch (e) {
-    console.warn('[HIRO API] Service Request fallback:', e);
+    console.warn('[RENTOZI API] Service Request fallback:', e);
     return req as ServiceRequest;
   }
 }

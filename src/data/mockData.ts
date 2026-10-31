@@ -2,11 +2,6 @@ import { RentalItem, Campus, ItemCategory, AdminService } from '../types';
 
 export const CAMPUSES: Campus[] = [
   { id: 'marwadi', name: 'Marwadi University', shortName: 'MU Rajkot', city: 'Rajkot', studentCount: '12,000+' },
-  { id: 'iitb', name: 'IIT Bombay', shortName: 'IITB', city: 'Mumbai', studentCount: '10,000+' },
-  { id: 'du-north', name: 'Delhi University (North Campus)', shortName: 'DU North', city: 'New Delhi', studentCount: '45,000+' },
-  { id: 'bits-pilani', name: 'BITS Pilani', shortName: 'BITS', city: 'Pilani', studentCount: '5,000+' },
-  { id: 'manipal', name: 'Manipal Academy of Higher Education', shortName: 'MAHE', city: 'Manipal', studentCount: '28,000+' },
-  { id: 'vit-vellore', name: 'VIT Vellore', shortName: 'VIT', city: 'Vellore', studentCount: '35,000+' },
 ];
 
 export const ADMIN_SERVICES: AdminService[] = [

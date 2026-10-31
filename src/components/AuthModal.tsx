@@ -107,7 +107,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
               onClick={onClose}
               className="mt-4 w-full py-3.5 rounded-xl bg-brand-lime text-black font-extrabold text-xs shadow-glow hover:bg-brand-limeHover cursor-pointer"
             >
-              Continue to HIRO
+              Continue to RENTOZI
             </button>
           </div>
         ) : !otpSent ? (

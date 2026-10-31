@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Menu, X, MapPin, ChevronDown, Plus } from 'lucide-react';
+import { Menu, X, MapPin, ChevronDown, Plus, LogIn, UserPlus } from 'lucide-react';
 import { Campus } from '../types';
 
 interface HeaderProps {
   onOpenListItemModal: () => void;
   onOpenAuthModal: () => void;
+  onOpenSignInModal: () => void;
+  onOpenRegisterModal: () => void;
   onNavigate: (sectionId: string) => void;
   currentCampus?: Campus;
   onOpenCampusModal?: () => void;
@@ -13,6 +15,8 @@ interface HeaderProps {
 export const Header: React.FC<HeaderProps> = ({
   onOpenListItemModal,
   onOpenAuthModal,
+  onOpenSignInModal,
+  onOpenRegisterModal,
   onNavigate,
   currentCampus,
   onOpenCampusModal,
@@ -31,17 +35,17 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20 gap-4">
           
-          {/* LEFT: HIRO Logo & Campus Borrow Club subtitle */}
+          {/* LEFT: RENTOZI Logo & Campus Borrow Club subtitle */}
           <button 
             onClick={() => handleNavClick('explore', 'hero')}
             className="flex items-center gap-3.5 text-left group cursor-pointer shrink-0"
           >
             <div className="w-10 h-10 rounded-xl bg-[#C8FF00] text-black font-black text-2xl flex items-center justify-center tracking-tighter shadow-sm">
-              H
+              R
             </div>
             <div className="flex items-center gap-2.5">
               <span className="font-extrabold text-2xl tracking-tight text-[#F5F7FA] block leading-none">
-                HIRO
+                RENTOZI
               </span>
               <div className="hidden sm:flex flex-col text-left pl-1">
                 <span className="text-[9px] font-bold text-[#94A3B8] tracking-widest uppercase leading-tight">
@@ -127,13 +131,22 @@ export const Header: React.FC<HeaderProps> = ({
             )}
 
 
-            {/* + Lend an Item Button */}
+            {/* Sign In button */}
             <button
-              onClick={onOpenListItemModal}
-              className="flex items-center gap-1.5 px-4 sm:px-5 py-2.5 rounded-xl font-bold text-sm bg-[#C8FF00] text-black hover:bg-[#B8EA00] transition-all cursor-pointer active:scale-95 shadow-sm"
+              onClick={onOpenSignInModal}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-semibold text-sm border border-[#24313C] text-[#F5F7FA] hover:border-[#C8FF00]/50 hover:text-[#C8FF00] transition-all cursor-pointer active:scale-95"
             >
-              <Plus className="w-4 h-4 stroke-[3]" />
-              <span>Lend an item</span>
+              <LogIn className="w-4 h-4" />
+              <span>Sign In</span>
+            </button>
+
+            {/* Register button */}
+            <button
+              onClick={onOpenRegisterModal}
+              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl font-bold text-sm bg-[#C8FF00]/10 border border-[#C8FF00]/40 text-[#C8FF00] hover:bg-[#C8FF00]/20 transition-all cursor-pointer active:scale-95"
+            >
+              <UserPlus className="w-4 h-4" />
+              <span>Register</span>
             </button>
           </div>
 
@@ -225,10 +238,18 @@ export const Header: React.FC<HeaderProps> = ({
               <span>Lend an item</span>
             </button>
             <button
-              onClick={() => { setMobileMenuOpen(false); onOpenAuthModal(); }}
-              className="w-full py-2.5 rounded-xl font-semibold text-xs border border-[#24313C] text-[#94A3B8] text-center"
+              onClick={() => { setMobileMenuOpen(false); onOpenSignInModal(); }}
+              className="w-full py-2.5 rounded-xl font-semibold text-sm border border-[#24313C] text-[#F5F7FA] text-center flex items-center justify-center gap-1.5 hover:border-[#C8FF00]/50 hover:text-[#C8FF00] transition-colors"
             >
-              Sign In (.ac.in University Email)
+              <LogIn className="w-4 h-4" />
+              Sign In
+            </button>
+            <button
+              onClick={() => { setMobileMenuOpen(false); onOpenRegisterModal(); }}
+              className="w-full py-2.5 rounded-xl font-bold text-sm bg-[#C8FF00]/10 border border-[#C8FF00]/40 text-[#C8FF00] text-center flex items-center justify-center gap-1.5 hover:bg-[#C8FF00]/20 transition-colors"
+            >
+              <UserPlus className="w-4 h-4" />
+              Register
             </button>
           </div>
         </div>

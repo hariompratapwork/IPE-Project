@@ -16,11 +16,6 @@ class Command(BaseCommand):
         # 1. Campuses
         campuses_data = [
             {'id': 'marwadi', 'name': 'Marwadi University', 'short_name': 'MU Rajkot', 'city': 'Rajkot', 'student_count': '12,000+'},
-            {'id': 'iitb', 'name': 'IIT Bombay', 'short_name': 'IITB', 'city': 'Mumbai', 'student_count': '10,000+'},
-            {'id': 'du-north', 'name': 'Delhi University (North Campus)', 'short_name': 'DU North', 'city': 'New Delhi', 'student_count': '45,000+'},
-            {'id': 'bits-pilani', 'name': 'BITS Pilani', 'short_name': 'BITS', 'city': 'Pilani', 'student_count': '5,000+'},
-            {'id': 'manipal', 'name': 'Manipal Academy of Higher Education', 'short_name': 'MAHE', 'city': 'Manipal', 'student_count': '28,000+'},
-            {'id': 'vit-vellore', 'name': 'VIT Vellore', 'short_name': 'VIT', 'city': 'Vellore', 'student_count': '35,000+'},
         ]
 
         for c in campuses_data:
@@ -94,6 +89,7 @@ class Command(BaseCommand):
                 'rentals_completed': 18,
                 'verified_student': True,
                 'join_year': '2023',
+                'upi_id': 'aarav.sharma@oksbi',
             },
             {
                 'id': 'owner-2',
@@ -106,6 +102,7 @@ class Command(BaseCommand):
                 'rentals_completed': 52,
                 'verified_student': True,
                 'join_year': '2022',
+                'upi_id': 'siddharth.d@paytm',
             },
             {
                 'id': 'owner-3',
@@ -118,6 +115,7 @@ class Command(BaseCommand):
                 'rentals_completed': 31,
                 'verified_student': True,
                 'join_year': '2022',
+                'upi_id': 'sneha.verma@icici',
             },
             {
                 'id': 'owner-4',
@@ -130,6 +128,7 @@ class Command(BaseCommand):
                 'rentals_completed': 45,
                 'verified_student': True,
                 'join_year': '2024',
+                'upi_id': 'ketan.patel@okhdfcbank',
             },
             {
                 'id': 'owner-5',
@@ -139,9 +138,10 @@ class Command(BaseCommand):
                 'campus': 'Marwadi University',
                 'hostel_or_dept': 'IT Dept, 4th Year',
                 'rating': 4.9,
-                'rentals_completed': 42,
+                'rentals_completed': 27,
                 'verified_student': True,
-                'join_year': '2022',
+                'join_year': '2023',
+                'upi_id': 'nikhil.rane@axisbank',
             },
             {
                 'id': 'owner-6',

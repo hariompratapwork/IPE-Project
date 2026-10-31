@@ -56,13 +56,12 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
   const [renterName, setRenterName] = useState<string>('');
   const [renterEmail, setRenterEmail] = useState<string>('');
 
-  // Cost Calculations matching Reference Slide 3
+  // Cost Calculations: Direct to Owner
   const rentalFee = durationMode === 'HOURLY' 
     ? Math.round((item.pricePerDay / 8) * durationValue) 
     : item.pricePerDay * durationValue;
-  const platformFee = Math.round(rentalFee * 0.03) || 15; // 3%
   const securityDeposit = item.securityDeposit;
-  const grandTotal = rentalFee + platformFee + securityDeposit;
+  const grandTotal = rentalFee + securityDeposit;
 
   const handleSubmitCheckout = (e: React.FormEvent) => {
     e.preventDefault();
@@ -319,24 +318,26 @@ export const ProductDetailModal: React.FC<ProductDetailModalProps> = ({
                     </div>
                   </div>
 
-                  {/* FEE BREAKDOWN MATCHING REFERENCE SLIDE 3 */}
+                  {/* TRANSPARENT DIRECT OWNER CHECKOUT BREAKDOWN */}
                   <div className="p-3.5 rounded-xl bg-black/40 border border-white/10 space-y-2 text-xs">
                     <div className="flex justify-between text-slate-300">
-                      <span>Rental ({durationValue} {durationMode === 'HOURLY' ? 'hrs' : 'days'})</span>
+                      <span>Rental Fee ({durationValue} {durationMode === 'HOURLY' ? 'hrs' : 'days'})</span>
                       <span className="font-semibold text-white">₹{rentalFee}</span>
                     </div>
                     <div className="flex justify-between text-slate-300">
-                      <span>Platform Fee (3%)</span>
-                      <span className="font-semibold text-white">₹{platformFee}</span>
-                    </div>
-                    <div className="flex justify-between text-slate-300">
-                      <span>Refundable Deposit</span>
+                      <div>
+                        <span>Refundable Security Deposit</span>
+                        <span className="block text-[10px] text-[#C8FF00]">Paid Directly to Owner</span>
+                      </div>
                       <span className="font-semibold text-white">₹{securityDeposit}</span>
                     </div>
                     <div className="pt-2 border-t border-white/10 flex justify-between font-bold text-sm text-white">
-                      <span>Payable Amount</span>
-                      <span className="text-brand-lime">₹{grandTotal}</span>
+                      <span>Payable Directly to Owner</span>
+                      <span className="text-[#C8FF00]">₹{grandTotal}</span>
                     </div>
+                    <p className="text-[10px] text-slate-400 pt-1 leading-tight">
+                      Payments and deposit refunds are handled directly between renter and owner.
+                    </p>
                   </div>
 
                   {/* PROCEED TO PAYMENT CTA */}
